@@ -46,6 +46,7 @@ structures = {
 
 pygame.init()
 pygame.event.set_blocked(pygame.MOUSEMOTION)
+#pygame.key.set_repeat(200,200)
 window = pygame.display.set_mode((WIDTH * TILESIZE * 2, HEIGHT * TILESIZE * 2))
 surface = pygame.Surface((WIDTH * TILESIZE, HEIGHT * TILESIZE))
 
@@ -152,6 +153,7 @@ background.fill((255, 255, 255))
 mapgen()
 
 while True:
+	dt = clock.tick(60) # Keep the framerate below 60FPS
 	surface.blit(background,(0, 0))
 	for event in pygame.event.get():
 		if event.type == QUIT:
