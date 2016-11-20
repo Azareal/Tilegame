@@ -1,6 +1,9 @@
 import pygame, sys, math
 from pygame.locals import *
 
+from player import *
+from structures import *
+
 TILESIZE = 8
 WIDTH = 50
 HEIGHT = 50
@@ -14,34 +17,6 @@ DARK_BROWN = (128,64,0)
 
 textures = {
 	'BLANK': 0
-}
-
-structures = {
-	'road': (
-	('ROAD_LEFT_LAMP','ROAD_MIDDLE','ROAD_MIDDLE','ROAD_MIDDLE','ROAD_RIGHT_LAMP'),
-	('ROAD_LEFT','ROAD_MIDDLE','ROAD_MIDDLE','ROAD_MIDDLE','ROAD_RIGHT'),
-	('ROAD_LEFT','ROAD_MIDDLE','ROAD_MIDDLE','ROAD_MIDDLE','ROAD_RIGHT')
-	),
-	
-	'half_road': (
-	('ROAD_LEFT_LAMP','ROAD_MIDDLE','ROAD_MIDDLE','ROAD_MIDDLE','ROAD_RIGHT_LAMP'),
-	('ROAD_LEFT','ROAD_MIDDLE','ROAD_MIDDLE','ROAD_MIDDLE','ROAD_RIGHT')
-	),
-	
-	'medium_house': (
-	('BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL'),
-	('BRICK_WALL','POTTED_PLANT','CARPET','CARPET','CARPET','INNER_WALL','CARPET','CARPET','CARPET','CARPET','CARPET','BRICK_WALL'),
-	('BRICK_WALL','CARPET','CARPET','CARPET','CARPET','INNER_WALL','CARPET','CARPET','CARPET','CARPET','CARPET','BRICK_WALL'),
-	('WINDOW','CARPET','CARPET','CARPET','CARPET','INNER_WALL','CARPET','CARPET','CARPET','CARPET','CARPET','BRICK_WALL'),
-	('WINDOW','CARPET','CARPET','CARPET','CARPET','INNER_WALL','CARPET','CARPET','CARPET','CARPET','CARPET','BRICK_WALL'),
-	('BRICK_WALL','SMALL_DOOR_TOP','INNER_WALL','INNER_WALL','INNER_WALL','INNER_WALL','SMALL_DOOR_TOP','INNER_WALL','INNER_WALL','INNER_WALL','INNER_WALL','BRICK_WALL'),
-	('DOOR','CARPET','CARPET','CARPET','CARPET','CARPET','CARPET','CARPET','STAIR_LEFT','STAIR_MIDDLE','STAIR_MIDDLE','BRICK_WALL'),
-	('BRICK_WALL','SMALL_DOOR_BOTTOM','INNER_WALL','INNER_WALL','INNER_WALL','INNER_WALL','SMALL_DOOR_BOTTOM','INNER_WALL','INNER_WALL','INNER_WALL','INNER_WALL','BRICK_WALL'),
-	('WINDOW','CARPET','CARPET','CARPET','CARPET','INNER_WALL','CARPET','CARPET','CARPET','CARPET','CARPET','BRICK_WALL'),
-	('WINDOW','CARPET','CARPET','CARPET','CARPET','INNER_WALL','CARPET','CARPET','CARPET','CARPET','CARPET','BRICK_WALL'),
-	('BRICK_WALL','POTTED_PLANT','CARPET','CARPET','CARPET','INNER_WALL','CARPET','CARPET','CARPET','CARPET','CARPET','BRICK_WALL'),
-	('BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL')
-	)
 }
 
 pygame.init()
@@ -151,15 +126,26 @@ def mapgen():
 background = pygame.Surface(surface.get_size())
 background.fill((255, 255, 255))
 mapgen()
+clock = pygame.time.Clock()
 
 while True:
-	dt = clock.tick(60) # Keep the framerate below 60FPS
-	surface.blit(background,(0, 0))
+	delta = clock.tick(60) # Keep the framerate below 60FPS
+	
 	for event in pygame.event.get():
 		if event.type == QUIT:
 			pygame.quit()
 			sys.exit()
 	
+	player = Player(10,10)
+	keys = pygame.key.get_pressed()
+	if keys[K_LEFT]:
+		player.move(-1,0)
+	elif keys[K_RIGHT]:
+		player.move(1,0)
+	
+	surface.blit(background,(0, 0)) # Overwrite the surface with the blank background
 	drawTiles()
-	pygame.transform.scale2x(surface, window)
+	player.draw(surface, delta)
+	
+	pygame.transform.scale2x(surface, window) # Scale up the graphics so the pixels aren't microscopic
 	pygame.display.update()
