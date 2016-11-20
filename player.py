@@ -1,4 +1,4 @@
-import pygame
+import pygame, math
 
 class Player:
 	image = False
@@ -18,6 +18,12 @@ class Player:
 			sys.exit()
 		self.image = self.image.convert()
 	
+	def getX(self):
+		return self.x
+	
+	def getY(self):
+		return self.y
+	
 	def move(self, xdir = 0, ydir = 0):
 		self.xdir = xdir
 		self.ydir = ydir
@@ -31,4 +37,4 @@ class Player:
 		self.xdir = 0
 		self.ydir = 0
 		
-		surface.blit(self.image, (self.x, self.y))
+		surface.blit(self.image, (int(math.floor(self.x)), int(math.floor(self.y))))

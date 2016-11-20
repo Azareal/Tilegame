@@ -127,6 +127,7 @@ background = pygame.Surface(surface.get_size())
 background.fill((255, 255, 255))
 mapgen()
 clock = pygame.time.Clock()
+player = Player(10,10)
 
 while True:
 	delta = clock.tick(60) # Keep the framerate below 60FPS
@@ -136,12 +137,15 @@ while True:
 			pygame.quit()
 			sys.exit()
 	
-	player = Player(10,10)
 	keys = pygame.key.get_pressed()
 	if keys[K_LEFT]:
 		player.move(-1,0)
 	elif keys[K_RIGHT]:
 		player.move(1,0)
+	elif keys[K_UP]:
+		player.move(0,-1)
+	elif keys[K_DOWN]:
+		player.move(0,1)
 	
 	surface.blit(background,(0, 0)) # Overwrite the surface with the blank background
 	drawTiles()
