@@ -7,12 +7,18 @@ class Entity:
 	image = False
 	x = 0
 	y = 0
+	tile = (0,0)
 	xdir = 0
 	ydir = 0
+	speed = 16
 	
-	def __init__(self, name, x, y):
+	colliders = {}
+	
+	def __init__(self, name, x, y, colliders):
 		self.x = x
 		self.y = y
+		self.tile = (absoluteToTile(x),absoluteToTile(y))
+		self.colliders = colliders
 		
 		try:
 			self.image = pygame.image.load('./sprites/' + name.lower() + '.png')
@@ -27,17 +33,36 @@ class Entity:
 	def getY(self):
 		return self.y
 	
+	def setX(self,x):
+		self.x = x
+	
+	def setY(self, y):
+		self.y = y
+	
 	def move(self, xdir = 0, ydir = 0):
 		self.xdir = xdir
 		self.ydir = ydir
 	
 	def draw(self, surface, delta):
-		speed = 1 / float(delta)
+		dspeed = 1 / float(delta)
 		if self.xdir != 0:
-			self.x += self.xdir# * speed
+			nextX = self.tile[0] + self.xdir
+			currentY = self.tile[1]
+			if str(nextX) + ':' + str(currentY) in self.colliders and self.colliders[str(nextX) + ':' + str(currentY)]:
+				self.xdir = 0
+				return
+			self.x += self.xdir * self.speed * dspeed
 		if self.ydir != 0:
-			self.y += self.ydir# * speed
+			nextY = self.tile[1] + self.ydir
+			currentX = self.tile[0]
+			if str(currentX) + ':' + str(nextY) in self.colliders and self.colliders[str(currentX) + ':' + str(nextY)]:
+				self.ydir = 0
+				return
+			self.y += self.ydir * self.speed * dspeed
 		self.xdir = 0
 		self.ydir = 0
 		
-		surface.blit(self.image, (int(math.floor(absoluteToTile(self.x))), int(math.floor(absoluteToTile(self.y)))))
+		tileX = absoluteToTile(self.x)
+		tileY = absoluteToTile(self.y)
+		self.tile = (tileX,tileY)
+		surface.blit(self.image,(int(tileX),int(tileY)))

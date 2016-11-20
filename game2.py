@@ -48,6 +48,8 @@ def getTile(x,y):
 	return tilegrid[str(x) + ':' + str(y)]
 
 def isSolid(x,y):
+	if not str(tileX) + ':' + str(tileY) in self.colliders:
+		return False
 	return dynamic_sprite_colliders[str(x) + ':' + str(y)]
 
 def drawTiles():
@@ -133,7 +135,7 @@ background = pygame.Surface(surface.get_size())
 background.fill((255, 255, 255))
 mapgen()
 clock = pygame.time.Clock()
-player = Player(10,10)
+player = Player(10,10,dynamic_sprite_colliders)
 
 while True:
 	delta = clock.tick(60) # Keep the framerate below 60FPS
@@ -148,7 +150,7 @@ while True:
 		player.move(-1,0)
 	elif keys[K_RIGHT]:
 		player.move(1,0)
-	elif keys[K_UP]:
+	if keys[K_UP]:
 		player.move(0,-1)
 	elif keys[K_DOWN]:
 		player.move(0,1)
