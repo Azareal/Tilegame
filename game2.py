@@ -3,10 +3,8 @@ from pygame.locals import *
 
 from player import *
 from structures import *
+from config import *
 
-TILESIZE = 8
-WIDTH = 50
-HEIGHT = 50
 tilegrid = {}
 dynamic_sprite_colliders = {}
 
@@ -40,9 +38,17 @@ for texture in loadTextures:
 
 def setTile(x,y,value):
 	tilegrid[str(x) + ':' + str(y)] = value
+	dynamic_sprite_colliders[str(x) + ':' + str(y)] = False
+
+def setSolidTile(x,y,value):
+	tilegrid[str(x) + ':' + str(y)] = value
+	dynamic_sprite_colliders[str(x) + ':' + str(y)] = True
 
 def getTile(x,y):
 	return tilegrid[str(x) + ':' + str(y)]
+
+def isSolid(x,y):
+	return dynamic_sprite_colliders[str(x) + ':' + str(y)]
 
 def drawTiles():
 	global surface
