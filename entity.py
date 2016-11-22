@@ -1,4 +1,6 @@
-import pygame, math, config
+import pygame, pygame.font, math, config
+
+#pygame.font.init()
 
 def absoluteToTile(coord):
 	return math.floor(coord / config.TILESIZE) * config.TILESIZE
@@ -13,6 +15,7 @@ class Entity:
 	speed = 16
 	
 	colliders = {}
+	arial = False
 	
 	def __init__(self, name, x, y, colliders):
 		self.x = x
@@ -26,6 +29,7 @@ class Entity:
 			print('Unable to load sprite: ' + name.lower())
 			sys.exit()
 		self.image = self.image.convert()
+		self.arial = pygame.font.SysFont("Arial", 10)
 	
 	def getX(self):
 		return self.x
@@ -46,17 +50,23 @@ class Entity:
 	def draw(self, surface, delta):
 		dspeed = 1 / float(delta)
 		if self.xdir != 0:
-			nextX = self.tile[0] + self.xdir
+			nextX = self.tile[0] + (self.xdir * config.TILESIZE)
 			currentY = self.tile[1]
-			if str(nextX) + ':' + str(currentY) in self.colliders and self.colliders[str(nextX) + ':' + str(currentY)]:
+			coords = str(nextX) + ':' + str(currentY)
+			print(coords)
+			if coords in self.colliders and self.colliders[coords]:
 				self.xdir = 0
+				print('Aaahhh!!!')
 				return
 			self.x += self.xdir * self.speed * dspeed
 		if self.ydir != 0:
-			nextY = self.tile[1] + self.ydir
+			nextY = self.tile[1] + (self.ydir * config.TILESIZE)
 			currentX = self.tile[0]
-			if str(currentX) + ':' + str(nextY) in self.colliders and self.colliders[str(currentX) + ':' + str(nextY)]:
+			coords = str(currentX) + ':' + str(nextY)
+			print(coords)
+			if coords in self.colliders and self.colliders[coords]:
 				self.ydir = 0
+				print('Aaahhh!!!')
 				return
 			self.y += self.ydir * self.speed * dspeed
 		self.xdir = 0
@@ -66,3 +76,7 @@ class Entity:
 		tileY = absoluteToTile(self.y)
 		self.tile = (tileX,tileY)
 		surface.blit(self.image,(int(tileX),int(tileY)))
+		
+		if config.debug:
+			text = self.arial.render(str(tileX) + ":" + str(tileY), False, (0,0,255))
+			surface.blit(text,(2,136))

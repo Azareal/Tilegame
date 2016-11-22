@@ -25,3 +25,10 @@ structures = {
 	('BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL','BRICK_WALL')
 	)
 }
+
+structure_colliders = ['BRICK_WALL','INNER_WALL']
+
+def door_control(self, tile):
+	# Lock shops at night? Or have buildings which are only open on certain days?
+	pass
+structure_special_colliders = {'DOOR': door_control}

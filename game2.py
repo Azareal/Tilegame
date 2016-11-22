@@ -1,4 +1,4 @@
-import pygame, sys, math
+import pygame, pygame.font, sys, math
 from pygame.locals import *
 
 from player import *
@@ -12,6 +12,7 @@ WHITE = (255,255,255)
 BLACK = (0,0,0)
 LIGHT_GRAY = (195,195,195)
 DARK_BROWN = (128,64,0)
+SCALE_FACTOR = 2
 
 textures = {
 	'BLANK': 0
@@ -20,8 +21,10 @@ textures = {
 pygame.init()
 pygame.event.set_blocked(pygame.MOUSEMOTION)
 #pygame.key.set_repeat(200,200)
-window = pygame.display.set_mode((WIDTH * TILESIZE * 2, HEIGHT * TILESIZE * 2))
+window = pygame.display.set_mode((WIDTH * TILESIZE * SCALE_FACTOR, HEIGHT * TILESIZE * SCALE_FACTOR))
 surface = pygame.Surface((WIDTH * TILESIZE, HEIGHT * TILESIZE))
+
+arial = pygame.font.SysFont("Arial", 8)
 
 loadTextures = [
 'ROAD_LEFT_LAMP','ROAD_RIGHT_LAMP','ROAD_LEFT','ROAD_RIGHT','ROAD_MIDDLE','BUSH','GRASS','PAVEMENT','DOOR','SMALL_DOOR_TOP','SMALL_DOOR_BOTTOM','INNER_WALL','BRICK_WALL','CARPET','WINDOW','FENCE','POTTED_PLANT','STAIR_LEFT','STAIR_MIDDLE'
@@ -38,8 +41,19 @@ for texture in loadTextures:
 
 def setTile(x,y,value):
 	tilegrid[str(x) + ':' + str(y)] = value
-	dynamic_sprite_colliders[str(x) + ':' + str(y)] = False
+	if value in structure_colliders:
+		dynamic_sprite_colliders[str(x) + ':' + str(y)] = True
+		if debug:
+			print('YES - ' + value)
+	else:
+		dynamic_sprite_colliders[str(x) + ':' + str(y)] = False
+		if debug:
+			print('NO - ' + value)
 
+def setHollowTile(x,y,value):
+	tilegrid[str(x) + ':' + str(y)] = value
+	dynamic_sprite_colliders[str(x) + ':' + str(y)] = False
+	
 def setSolidTile(x,y,value):
 	tilegrid[str(x) + ':' + str(y)] = value
 	dynamic_sprite_colliders[str(x) + ':' + str(y)] = True
@@ -59,6 +73,9 @@ def drawTiles():
 		xCoord = int(coords[0]) * TILESIZE
 		yCoord = int(coords[1]) * TILESIZE
 		surface.blit(textures[value], (xCoord, yCoord))
+		#if debug:
+		#	text = arial.render(str(xCoord) + ":" + str(yCoord), False, (0,0,255))
+		#	surface.blit(text,(xCoord,yCoord))
 
 def getStructure(name):
 	if name not in structures:
@@ -134,6 +151,13 @@ def mapgen():
 background = pygame.Surface(surface.get_size())
 background.fill((255, 255, 255))
 mapgen()
+
+if debug:
+	print('-----')
+	print('Collider Map:')
+	for key, value in dynamic_sprite_colliders.items():
+		print(key + "=" + str(value))
+
 clock = pygame.time.Clock()
 player = Player(10,10,dynamic_sprite_colliders)
 
