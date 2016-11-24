@@ -28,7 +28,7 @@ structures = {
 
 structure_colliders = ['BRICK_WALL','INNER_WALL']
 
-def door_control(self, tile):
-	# Lock shops at night? Or have buildings which are only open on certain days?
-	pass
+def door_control(tileX, tileY):
+	# Lock shops at night? Or have buildings which are only open on certain days? For now, permit all access
+	return 0
 structure_special_colliders = {'DOOR': door_control}

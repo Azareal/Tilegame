@@ -14,6 +14,7 @@ def absoluteToTile(coord):
 	return math.floor(coord / config.TILESIZE)
 
 class Entity:
+	name = "Unknown Entity"
 	image = False
 	x = 0
 	y = 0
@@ -25,6 +26,7 @@ class Entity:
 	arial = False
 	
 	def __init__(self, name, x, y, colliders):
+		self.name = name
 		self.x = x
 		self.y = y
 		self.tile = (int(absoluteToTile(x)),int(absoluteToTile(y)))
@@ -38,17 +40,32 @@ class Entity:
 		self.image = self.image.convert()
 		self.arial = pygame.font.SysFont("Arial", 10)
 	
-	def getX(self):
+	def getRawX(self):
 		return self.x
 	
-	def getY(self):
+	def getRawY(self):
 		return self.y
 	
-	def setX(self,x):
-		self.x = x
+	def setRawX(self,rawX):
+		self.x = rawX
 	
-	def setY(self, y):
-		self.y = y
+	def setRawY(self, rawY):
+		self.y = rawY
+	
+	def setPosition(self, tileX, tileY):
+		self.x = tileX * config.TILESIZE
+		self.y = tileY * config.TILESIZE
+		self.tile = (tileX, tileY)
+		self.dir = 0
+	
+	def getPosition(self):
+		return self.tile
+	
+	def setSpeed(self, newSpeed):
+		self.speed = newSpeed
+	
+	def getSpeed(self):
+		return self.speed
 	
 	def move(self, dir = 0):
 		self.dir = dir
@@ -60,7 +77,7 @@ class Entity:
 			currentY = self.tile[1]
 			coords = str(nextX) + ':' + str(currentY)
 			print(coords)
-			if coords in self.colliders and self.colliders[coords]:
+			if coords in self.colliders and self.colliders[coords] > 0:
 				self.dir = 0
 				print(coords)
 				print('Aaahhh!!!')
@@ -71,7 +88,7 @@ class Entity:
 			currentY = self.tile[1]
 			coords = str(nextX) + ':' + str(currentY)
 			print(coords)
-			if coords in self.colliders and self.colliders[coords]:
+			if coords in self.colliders and self.colliders[coords] > 0:
 				self.dir = 0
 				print(coords)
 				print('Aaahhh!!!')
@@ -83,7 +100,7 @@ class Entity:
 			currentX = self.tile[0]
 			coords = str(currentX) + ':' + str(nextY)
 			print(coords)
-			if coords in self.colliders and self.colliders[coords]:
+			if coords in self.colliders and self.colliders[coords] > 0:
 				self.dir = 0
 				print(coords)
 				print('Aaahhh!!!')
@@ -94,7 +111,7 @@ class Entity:
 			currentX = self.tile[0]
 			coords = str(currentX) + ':' + str(nextY)
 			print(coords)
-			if coords in self.colliders and self.colliders[coords]:
+			if coords in self.colliders and self.colliders[coords] > 0:
 				self.dir = 0
 				print(coords)
 				print('Aaahhh!!!')

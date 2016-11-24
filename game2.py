@@ -8,6 +8,7 @@ import entity
 
 tilegrid = {}
 dynamic_sprite_colliders = {}
+game_time = 0 # The internal clock of the game world
 
 WHITE = (255,255,255)
 BLACK = (0,0,0)
@@ -18,6 +19,7 @@ SCALE_FACTOR = 2
 textures = {
 	'BLANK': 0
 }
+guiImages = {}
 
 pygame.init()
 pygame.event.set_blocked(pygame.MOUSEMOTION)
@@ -25,7 +27,8 @@ pygame.event.set_blocked(pygame.MOUSEMOTION)
 window = pygame.display.set_mode((WIDTH * TILESIZE * SCALE_FACTOR, HEIGHT * TILESIZE * SCALE_FACTOR))
 surface = pygame.Surface((WIDTH * TILESIZE, HEIGHT * TILESIZE))
 
-arial = pygame.font.SysFont("Arial", 8)
+arial = pygame.font.SysFont("Arial", 10)
+arial20 = pygame.font.SysFont("Arial", 20)
 
 loadTextures = [
 'ROAD_LEFT_LAMP','ROAD_RIGHT_LAMP','ROAD_LEFT','ROAD_RIGHT','ROAD_MIDDLE','BUSH','GRASS','PAVEMENT','DOOR','SMALL_DOOR_TOP','SMALL_DOOR_BOTTOM','INNER_WALL','BRICK_WALL','CARPET','WINDOW','FENCE','POTTED_PLANT','STAIR_LEFT','STAIR_MIDDLE'
@@ -40,24 +43,39 @@ for texture in loadTextures:
 	image = image.convert()
 	textures[texture] = image
 
+loadGuiImages = ['COIN','COIN2','GEAR']
+
+for guiImage in loadGuiImages:
+	try:
+		image = pygame.image.load('./gui/' + guiImage.lower() + '.png')
+	except pygame.error as message:
+		print('Unable to load image: ' + guiImage.lower())
+		sys.exit()
+	image = image.convert()
+	guiImages[guiImage] = image
+
 def setTile(x,y,value):
 	tilegrid[str(x) + ':' + str(y)] = value
 	if value in structure_colliders:
-		dynamic_sprite_colliders[str(x) + ':' + str(y)] = True
+		dynamic_sprite_colliders[str(x) + ':' + str(y)] = 1
 		if debug:
 			print('YES - ' + value)
+	elif value in structure_special_colliders and structure_special_colliders[value](x,y):
+		dynamic_sprite_colliders[str(x) + ':' + str(y)] = 2
+		if debug:
+			print('YES SPECIAL - ' + value)
 	else:
-		dynamic_sprite_colliders[str(x) + ':' + str(y)] = False
+		dynamic_sprite_colliders[str(x) + ':' + str(y)] = 0
 		if debug:
 			print('NO - ' + value)
 
 def setHollowTile(x,y,value):
 	tilegrid[str(x) + ':' + str(y)] = value
-	dynamic_sprite_colliders[str(x) + ':' + str(y)] = False
+	dynamic_sprite_colliders[str(x) + ':' + str(y)] = 0
 	
 def setSolidTile(x,y,value):
 	tilegrid[str(x) + ':' + str(y)] = value
-	dynamic_sprite_colliders[str(x) + ':' + str(y)] = True
+	dynamic_sprite_colliders[str(x) + ':' + str(y)] = 1
 
 def getTile(x,y):
 	return tilegrid[str(x) + ':' + str(y)]
@@ -65,7 +83,7 @@ def getTile(x,y):
 def isSolid(x,y):
 	if not str(tileX) + ':' + str(tileY) in self.colliders:
 		return False
-	return dynamic_sprite_colliders[str(x) + ':' + str(y)]
+	return dynamic_sprite_colliders[str(x) + ':' + str(y)] > 0
 
 def drawTiles():
 	global surface
@@ -184,5 +202,16 @@ while True:
 	drawTiles()
 	player.draw(surface, delta)
 	
+	# GUI Images
+	surface.blit(guiImages['COIN2'],(2, (HEIGHT * TILESIZE) - (TILESIZE * 2)))
+	surface.blit(guiImages['GEAR'],(24, (HEIGHT * TILESIZE) - (TILESIZE * 2)))
+	
 	pygame.transform.scale2x(surface, window) # Scale up the graphics so the pixels aren't microscopic
+	
+	# GUI Text
+	text = arial20.render(str(player.money), False, (0,0,0))
+	window.blit(text,((16 * 2), (((HEIGHT * TILESIZE) - (TILESIZE * 2)) * 2 - 2)))
+	text = arial20.render(str(player.gears), False, (0,0,0))
+	window.blit(text,((37 * 2), (((HEIGHT * TILESIZE) - (TILESIZE * 2)) * 2 - 2)))
+			
 	pygame.display.update()
