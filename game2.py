@@ -4,6 +4,7 @@ from pygame.locals import *
 from player import *
 from structures import *
 from config import *
+import entity
 
 tilegrid = {}
 dynamic_sprite_colliders = {}
@@ -171,13 +172,13 @@ while True:
 	
 	keys = pygame.key.get_pressed()
 	if keys[K_LEFT]:
-		player.move(-1,0)
+		player.move(entity.LEFT)
 	elif keys[K_RIGHT]:
-		player.move(1,0)
+		player.move(entity.RIGHT)
 	if keys[K_UP]:
-		player.move(0,-1)
+		player.move(entity.UP)
 	elif keys[K_DOWN]:
-		player.move(0,1)
+		player.move(entity.DOWN)
 	
 	surface.blit(background,(0, 0)) # Overwrite the surface with the blank background
 	drawTiles()
