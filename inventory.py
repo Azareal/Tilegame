@@ -4,27 +4,27 @@ class Inventory:
 	
 	# Insert an item at a specific index
 	def insertItem(self, index, item):
-		if len(items) >= self.maxSize:
+		if len(self.items) >= self.maxSize:
 			return False
-		items.insert(index,item)
+		self.items.insert(index,item)
 		return True
 	
 	# Insert an item at the end of the item list
 	def addItem(self, item):
-		if len(items) >= self.maxSize:
+		if len(self.items) >= self.maxSize:
 			return False
-		items.append(item)
+		self.items.append(item)
 		return True
 	
 	def removeItem(self, item):
-		items.remove(item)
+		self.items.remove(item)
 	
 	def popItem(self):
-		return items.pop()
+		return self.items.pop()
 	
 	def getItem(self, index):
 		try:
-			item = items[index]
+			item = self.items[index]
 		except:
 			return False
 		return item
@@ -41,7 +41,7 @@ class Inventory:
 		return False
 	
 	def overcapacity(self):
-		return len(items) > self.maxSize
+		return len(self.items) > self.maxSize
 	
 	def setMaxSize(self, maxSize):
 		self.maxSize = maxSize
@@ -50,4 +50,4 @@ class Inventory:
 		return self.maxSize
 	
 	def length(self):
-		return len(items)
+		return len(self.items)

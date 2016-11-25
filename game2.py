@@ -4,10 +4,12 @@ from pygame.locals import *
 from player import *
 from structures import *
 from config import *
-import entity
+import entity, item
 
 tilegrid = {}
+tile_items = {}
 dynamic_sprite_colliders = {}
+special_tiles = {}
 game_time = 0 # The internal clock of the game world
 
 WHITE = (255,255,255)
@@ -27,8 +29,8 @@ pygame.event.set_blocked(pygame.MOUSEMOTION)
 window = pygame.display.set_mode((WIDTH * TILESIZE * SCALE_FACTOR, HEIGHT * TILESIZE * SCALE_FACTOR))
 surface = pygame.Surface((WIDTH * TILESIZE, HEIGHT * TILESIZE))
 
-arial = pygame.font.SysFont("Arial", 10)
-arial20 = pygame.font.SysFont("Arial", 20)
+font = pygame.font.SysFont(config.font, 10)
+font20 = pygame.font.SysFont(config.font, 20)
 
 loadTextures = [
 'ROAD_LEFT_LAMP','ROAD_RIGHT_LAMP','ROAD_LEFT','ROAD_RIGHT','ROAD_MIDDLE','BUSH','GRASS','PAVEMENT','DOOR','SMALL_DOOR_TOP','SMALL_DOOR_BOTTOM','INNER_WALL','BRICK_WALL','CARPET','WINDOW','FENCE','POTTED_PLANT','STAIR_LEFT','STAIR_MIDDLE'
@@ -93,7 +95,7 @@ def drawTiles():
 		yCoord = int(coords[1]) * TILESIZE
 		surface.blit(textures[value], (xCoord, yCoord))
 		#if debug:
-		#	text = arial.render(str(xCoord) + ":" + str(yCoord), False, (0,0,255))
+		#	text = font.render(str(xCoord) + ":" + str(yCoord), False, (0,0,255))
 		#	surface.blit(text,(xCoord,yCoord))
 
 def getStructure(name):
@@ -161,11 +163,19 @@ def addGarden(x = 0, y = 0, width = 12, height = 14):
 #def addFence(length, x, y):
 #	
 
+def addTileItem(iitem, tileX, tileY):
+	tile_items[str(tileX) + ':' + str(tileY)] = iitem
+
 def mapgen():
 	roadCoords = addRoad(5)
 	addStructure(name = 'half_road', x = roadCoords[0], y = roadCoords[3])
 	addMediumHouse(x = roadCoords[2])
 	#addFence(19)
+	iitem = item.TileItem("Lost Purse","lost_purse",item.STATS, True)
+	iitem.karma = -1
+	iitem.coins = 5
+	iitem.event = 101
+	addTileItem(iitem, 4,4)
 
 background = pygame.Surface(surface.get_size())
 background.fill((255, 255, 255))
@@ -178,7 +188,7 @@ if debug:
 		print(key + "=" + str(value))
 
 clock = pygame.time.Clock()
-player = Player(10,10,dynamic_sprite_colliders)
+player = Player(4,4,dynamic_sprite_colliders)
 
 while True:
 	delta = clock.tick(60) # Keep the framerate below 60FPS
@@ -197,9 +207,17 @@ while True:
 		player.move(entity.UP)
 	elif keys[K_DOWN]:
 		player.move(entity.DOWN)
+	elif keys[K_RETURN]:
+		player.pickup(tile_items)
 	
 	surface.blit(background,(0, 0)) # Overwrite the surface with the blank background
 	drawTiles()
+	
+	for key, value in tile_items.items():
+		tile = key.split(':')
+		print(tile[0] + ',' + tile[1])
+		value.draw(surface, int(tile[0]),int(tile[1]))
+		
 	player.draw(surface, delta)
 	
 	# GUI Images
@@ -209,9 +227,9 @@ while True:
 	pygame.transform.scale2x(surface, window) # Scale up the graphics so the pixels aren't microscopic
 	
 	# GUI Text
-	text = arial20.render(str(player.money), False, (0,0,0))
+	text = font20.render(str(player.money), False, (0,0,0))
 	window.blit(text,((16 * 2), (((HEIGHT * TILESIZE) - (TILESIZE * 2)) * 2 - 2)))
-	text = arial20.render(str(player.gears), False, (0,0,0))
+	text = font20.render(str(player.gears), False, (0,0,0))
 	window.blit(text,((37 * 2), (((HEIGHT * TILESIZE) - (TILESIZE * 2)) * 2 - 2)))
 			
 	pygame.display.update()

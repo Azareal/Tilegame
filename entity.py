@@ -1,7 +1,5 @@
 import pygame, pygame.font, math, config
 
-#pygame.font.init()
-
 LEFT = 1
 RIGHT = 2
 UP = 3
@@ -23,13 +21,14 @@ class Entity:
 	speed = 16
 	
 	colliders = {}
-	arial = False
+	font = False
+	phantom = False
 	
-	def __init__(self, name, x, y, colliders):
+	def __init__(self, name, tileX, tileY, colliders):
 		self.name = name
-		self.x = x
-		self.y = y
-		self.tile = (int(absoluteToTile(x)),int(absoluteToTile(y)))
+		self.x = tileX * config.TILESIZE
+		self.y = tileY * config.TILESIZE
+		self.tile = (tileX,tileY)
 		self.colliders = colliders
 		
 		try:
@@ -38,7 +37,7 @@ class Entity:
 			print('Unable to load sprite: ' + name.lower())
 			sys.exit()
 		self.image = self.image.convert()
-		self.arial = pygame.font.SysFont("Arial", 10)
+		self.font = pygame.font.SysFont(config.font, 10)
 	
 	def getRawX(self):
 		return self.x
@@ -51,6 +50,12 @@ class Entity:
 	
 	def setRawY(self, rawY):
 		self.y = rawY
+	
+	def getTile(self):
+		return self.tile
+	
+	def setTile(self, tileX, tileY):
+		self.tile = (tileX, tileY)
 	
 	def setPosition(self, tileX, tileY):
 		self.x = tileX * config.TILESIZE
@@ -77,7 +82,7 @@ class Entity:
 			currentY = self.tile[1]
 			coords = str(nextX) + ':' + str(currentY)
 			print(coords)
-			if coords in self.colliders and self.colliders[coords] > 0:
+			if coords in self.colliders and self.colliders[coords] > 0 and not self.phantom:
 				self.dir = 0
 				print(coords)
 				print('Aaahhh!!!')
@@ -88,7 +93,7 @@ class Entity:
 			currentY = self.tile[1]
 			coords = str(nextX) + ':' + str(currentY)
 			print(coords)
-			if coords in self.colliders and self.colliders[coords] > 0:
+			if coords in self.colliders and self.colliders[coords] > 0 and not self.phantom:
 				self.dir = 0
 				print(coords)
 				print('Aaahhh!!!')
@@ -100,7 +105,7 @@ class Entity:
 			currentX = self.tile[0]
 			coords = str(currentX) + ':' + str(nextY)
 			print(coords)
-			if coords in self.colliders and self.colliders[coords] > 0:
+			if coords in self.colliders and self.colliders[coords] > 0 and not self.phantom:
 				self.dir = 0
 				print(coords)
 				print('Aaahhh!!!')
@@ -111,7 +116,7 @@ class Entity:
 			currentX = self.tile[0]
 			coords = str(currentX) + ':' + str(nextY)
 			print(coords)
-			if coords in self.colliders and self.colliders[coords] > 0:
+			if coords in self.colliders and self.colliders[coords] > 0 and not self.phantom:
 				self.dir = 0
 				print(coords)
 				print('Aaahhh!!!')
@@ -125,7 +130,7 @@ class Entity:
 		surface.blit(self.image,(tileX * config.TILESIZE,tileY * config.TILESIZE))
 		
 		if config.debug:
-			text = self.arial.render(str(tileX * config.TILESIZE) + ":" + str(tileY * config.TILESIZE), False, (0,0,255))
+			text = self.font.render(str(tileX * config.TILESIZE) + ":" + str(tileY * config.TILESIZE), False, (0,0,255))
 			surface.blit(text,(2,136))
-			text = self.arial.render(str(tileX) + ":" + str(tileY), False, (0,0,255))
+			text = self.font.render(str(tileX) + ":" + str(tileY), False, (0,0,255))
 			surface.blit(text,(2,146))
