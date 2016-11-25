@@ -4,7 +4,7 @@ from pygame.locals import *
 from player import *
 from structures import *
 from config import *
-import entity, item
+import entity, items
 
 tilegrid = {}
 tile_items = {}
@@ -33,7 +33,8 @@ font = pygame.font.SysFont(config.font, 10)
 font20 = pygame.font.SysFont(config.font, 20)
 
 loadTextures = [
-'ROAD_LEFT_LAMP','ROAD_RIGHT_LAMP','ROAD_LEFT','ROAD_RIGHT','ROAD_MIDDLE','BUSH','GRASS','PAVEMENT','DOOR','SMALL_DOOR_TOP','SMALL_DOOR_BOTTOM','INNER_WALL','BRICK_WALL','CARPET','WINDOW','FENCE','POTTED_PLANT','STAIR_LEFT','STAIR_MIDDLE'
+'ROAD_LEFT_LAMP','ROAD_RIGHT_LAMP','ROAD_LEFT','ROAD_RIGHT','ROAD_MIDDLE','BUSH','GRASS','PAVEMENT','DOOR','SMALL_DOOR_TOP','SMALL_DOOR_BOTTOM','INNER_WALL','BRICK_WALL','CARPET','WINDOW','FENCE','POTTED_PLANT','STAIR_LEFT','STAIR_MIDDLE',
+'SPACESHIP'
 ]
 
 for texture in loadTextures:
@@ -171,11 +172,23 @@ def mapgen():
 	addStructure(name = 'half_road', x = roadCoords[0], y = roadCoords[3])
 	addMediumHouse(x = roadCoords[2])
 	#addFence(19)
-	iitem = item.TileItem("Lost Purse","lost_purse",item.STATS, True)
-	iitem.karma = -1
-	iitem.coins = 5
+	
+	iitem = items.TileItem("Lost Purse","lost_purse","A lost purse. You should return it to it's rightful owner.",items.STATS, True)
+	iitem.karma = -2
+	iitem.coins = 10
 	iitem.event = 101
 	addTileItem(iitem, 4,4)
+	
+	iitem = items.TileItem("Lost Coin","coin","A random coin you found on the ground.",items.RESOURCE, True)
+	iitem.coins = 1
+	addTileItem(iitem, 10,6)
+	
+	iitem = items.TileItem("Potted Plant","potted_plant","Bring a little piece of nature into our homes.",items.FURNITURE, False)
+	iitem.pickup = False
+	addTileItem(iitem, 18,1)
+	iitem = items.TileItem("Potted Plant","potted_plant","Bring a little piece of nature into our homes.",items.FURNITURE, False)
+	iitem.pickup = False
+	addTileItem(iitem, 18,10)
 
 background = pygame.Surface(surface.get_size())
 background.fill((255, 255, 255))
@@ -188,7 +201,7 @@ if debug:
 		print(key + "=" + str(value))
 
 clock = pygame.time.Clock()
-player = Player(4,4,dynamic_sprite_colliders)
+player = Player(1,1,dynamic_sprite_colliders)
 
 while True:
 	delta = clock.tick(60) # Keep the framerate below 60FPS
@@ -215,7 +228,7 @@ while True:
 	
 	for key, value in tile_items.items():
 		tile = key.split(':')
-		print(tile[0] + ',' + tile[1])
+		#print(tile[0] + ',' + tile[1])
 		value.draw(surface, int(tile[0]),int(tile[1]))
 		
 	player.draw(surface, delta)
@@ -227,7 +240,7 @@ while True:
 	pygame.transform.scale2x(surface, window) # Scale up the graphics so the pixels aren't microscopic
 	
 	# GUI Text
-	text = font20.render(str(player.money), False, (0,0,0))
+	text = font20.render(str(player.coins), False, (0,0,0))
 	window.blit(text,((16 * 2), (((HEIGHT * TILESIZE) - (TILESIZE * 2)) * 2 - 2)))
 	text = font20.render(str(player.gears), False, (0,0,0))
 	window.blit(text,((37 * 2), (((HEIGHT * TILESIZE) - (TILESIZE * 2)) * 2 - 2)))

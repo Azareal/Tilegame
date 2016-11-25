@@ -19,6 +19,7 @@ class Entity:
 	tile = (0,0)
 	dir = 0
 	speed = 16
+	speed_mod = 1
 	
 	colliders = {}
 	font = False
@@ -36,7 +37,7 @@ class Entity:
 		except pygame.error as message:
 			print('Unable to load sprite: ' + name.lower())
 			sys.exit()
-		self.image = self.image.convert()
+		self.image = self.image.convert_alpha()
 		self.font = pygame.font.SysFont(config.font, 10)
 	
 	def getRawX(self):
@@ -87,7 +88,7 @@ class Entity:
 				print(coords)
 				print('Aaahhh!!!')
 				return
-			self.x += -1 * self.speed * dspeed
+			self.x += -1 * self.speed * self.speed_mod * dspeed
 		elif self.dir == RIGHT:
 			nextX = self.tile[0] + 1
 			currentY = self.tile[1]
@@ -98,7 +99,7 @@ class Entity:
 				print(coords)
 				print('Aaahhh!!!')
 				return
-			self.x += 1 * self.speed * dspeed
+			self.x += 1 * self.speed * self.speed_mod * dspeed
 		
 		if self.dir == UP:
 			nextY = self.tile[1] - 1
@@ -110,7 +111,7 @@ class Entity:
 				print(coords)
 				print('Aaahhh!!!')
 				return
-			self.y += -1 * self.speed * dspeed
+			self.y += -1 * self.speed * self.speed_mod * dspeed
 		elif self.dir == DOWN:
 			nextY = self.tile[1] + 1
 			currentX = self.tile[0]
@@ -121,7 +122,7 @@ class Entity:
 				print(coords)
 				print('Aaahhh!!!')
 				return
-			self.y += 1 * self.speed * dspeed
+			self.y += 1 * self.speed * self.speed_mod * dspeed
 		self.dir = 0
 		
 		tileX = int(absoluteToTile(self.x))
